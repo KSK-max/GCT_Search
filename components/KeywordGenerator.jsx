@@ -11,30 +11,30 @@ import {
 } from "@nextui-org/react";
 import { useState } from "react";
 import axios from "axios";
+import Image from "next/image";
 
 function KeywordGenerator() {
 	const [word, setWord] = useState("");
 	const [showOutput, setShowOutput] = useState(false);
-	const [countryData, setCountryData] = useState ([]);
+	const [countryData, setCountryData] = useState([]);
 	const [isFetching, setIsFetching] = useState(false);
 	const handleKeywords = async () => {
 		setShowOutput(false);
 		setIsFetching(true);
 		try {
-			const res = await axios.post(
-
-				"https://eiq6kuffrhqwis2avbhiw5z7tq0wowak.lambda-url.eu-north-1.on.aws/search_function",
+			const { data } = await axios.post(
+				`http://16.170.27.15/search_function`,
 				JSON.stringify({ search_term: word }),
 				{
-		 			method: "POST",
+					method: "POST",
 					headers: { "Content-Type": "application/json" },
 				}
 			);
-            const countryDataArray = []
-            for(const countryData in res){
-                countryDataArray.push(countryData)
-            }
-            setCountryData(countryDataArray);
+			const countryDataArray = [];
+			for (const countryData in data) {
+				countryDataArray.push({ ...data[countryData], name: countryData });
+			}
+			setCountryData(countryDataArray);
 			setShowOutput(true);
 		} catch (error) {
 			alert(error);
@@ -76,15 +76,34 @@ function KeywordGenerator() {
 					</Button>
 				</form>
 			</div>
-			{showOutput && (
-				<Card className="bg-slate-700 border-2 border-blue-900">
-					<CardBody>
-						<div className="flex flex-wrap gap-2 sm:gap-4">
-							{countryData.map(country => <div key={country.link}>{country.link} </div>)}
-						</div>
-					</CardBody>
-				</Card>
-			)}
+			{showOutput &&
+				countryData.map((country) => {
+					return (
+						<Card
+							className="bg-slate-700 border-2 border-blue-900 text-white"
+							key={country.name}
+						>
+							<CardHeader>
+								<h2 className="text-2xl">{country.name}</h2>
+							</CardHeader>
+							<CardBody>
+								<div className="flex flex-col md:flex-row gap-8">
+									<Image
+										alt={country.name}
+										src={`https://source.unsplash.com/random/?${country.name}`}
+										width={300}
+										height={300}
+									/>
+									<div className="flex gap-2 flex-wrap items-center justify-start h-fit">
+										{country.top_n_keywords.map((keyword) => (
+											<Chip key={keyword}>{keyword}</Chip>
+										))}
+									</div>
+								</div>
+							</CardBody>
+						</Card>
+					);
+				})}
 		</div>
 	);
 }
