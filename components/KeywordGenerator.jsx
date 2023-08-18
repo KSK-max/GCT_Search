@@ -30,17 +30,25 @@ function KeywordGenerator() {
 					headers: { "Content-Type": "application/json" },
 				}
 			);
-			const countryDataArray = [];
-			for (const countryData in data) {
-				countryDataArray.push({ ...data[countryData], name: countryData });
-			}
-			setCountryData(countryDataArray);
-			setShowOutput(true);
-		} catch (error) {
-			alert(error);
-		}
-		setIsFetching(false);
-	};
+			let topCountry = null;
+      let maxKeywords = 0;
+      
+      for (const countryData in data) {
+        if (data[countryData].top_n_keywords.length > maxKeywords) {
+          maxKeywords = data[countryData].top_n_keywords.length;
+          topCountry = { ...data[countryData], name: countryData };
+        }
+      }
+      
+      if (topCountry) {
+        setCountryData([topCountry]);
+        setShowOutput(true);
+      }
+    } catch (error) {
+      alert(error);
+    }
+    setIsFetching(false);
+  };
 
 	return (
 		<div className="flex flex-col gap-4 sm:gap-8 px-6 pb-2 container font-thin">
