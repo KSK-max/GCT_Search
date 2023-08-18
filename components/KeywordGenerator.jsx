@@ -13,23 +13,28 @@ import { useState } from "react";
 import axios from "axios";
 
 function KeywordGenerator() {
-	const [url, setUrl] = useState("");
+	const [word, setWord] = useState("");
 	const [showOutput, setShowOutput] = useState(false);
-	const [keywords, setKeywords] = useState<string>("");
+	const [countryData, setCountryData] = useState ([]);
 	const [isFetching, setIsFetching] = useState(false);
 	const handleKeywords = async () => {
 		setShowOutput(false);
 		setIsFetching(true);
 		try {
 			const res = await axios.post(
-				"https://corsproxy.io/?https://g4psxk5dfojq227n6ssufwu2gi0qbqzl.lambda-url.eu-north-1.on.aws/30_keywords",
-				JSON.stringify({ url: url }),
+
+				"https://eiq6kuffrhqwis2avbhiw5z7tq0wowak.lambda-url.eu-north-1.on.aws/search_function",
+				JSON.stringify({ search_term: word }),
 				{
 		 			method: "POST",
 					headers: { "Content-Type": "application/json" },
 				}
 			);
-			setKeywords(res.data.keywords);
+            const countryDataArray = []
+            for(const countryData in res){
+                countryDataArray.push(countryData)
+            }
+            setCountryData(countryDataArray);
 			setShowOutput(true);
 		} catch (error) {
 			alert(error);
@@ -50,12 +55,12 @@ function KeywordGenerator() {
 				</h4>
 				<form className="flex flex-col gap-4 items-center mt-2">
 					<Input
-						id="url"
+						id="word"
 						type="text"
-						label="Content URL"
+						label="Search Country"
 						className="text-xl  text-black"
-						onChange={(e) => setUrl(e.target.value)}
-						value={url}
+						onChange={(e) => setWord(e.target.value)}
+						value={word}
 					/>
 					<Button
 						onClick={handleKeywords}
@@ -75,11 +80,7 @@ function KeywordGenerator() {
 				<Card className="bg-slate-700 border-2 border-blue-900">
 					<CardBody>
 						<div className="flex flex-wrap gap-2 sm:gap-4">
-							{keywords.split(/\n/).map((keyword) => (
-								<Chip className="bg-gray-100" key={keyword}>
-									{keyword}
-								</Chip>
-							))}
+							{countryData.map(country => <div key={country.link}>{country.link} </div>)}
 						</div>
 					</CardBody>
 				</Card>
