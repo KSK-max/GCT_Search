@@ -12,6 +12,10 @@ import {
 import { useState } from "react";
 import axios from "axios";
 import Image from "next/image";
+import { AiOutlineSearch } from "react-icons/ai";
+
+
+
 
 function KeywordGenerator() {
 	const [word, setWord] = useState("");
@@ -31,55 +35,64 @@ function KeywordGenerator() {
 				}
 			);
 			let topCountry = null;
-      let maxKeywords = 0;
-      
-      for (const countryData in data) {
-        if (data[countryData].top_n_keywords.length > maxKeywords) {
-          maxKeywords = data[countryData].top_n_keywords.length;
-          topCountry = { ...data[countryData], name: countryData };
-        }
-      }
-      
-      if (topCountry) {
-        setCountryData([topCountry]);
-        setShowOutput(true);
-      }
-    } catch (error) {
-      alert(error);
-    }
-    setIsFetching(false);
-  };
+			let maxKeywords = 0;
+
+			for (const countryName in data) {
+				const country = data[countryName];
+				if (country.top_n_keywords.length > maxKeywords) {
+					maxKeywords = country.top_n_keywords.length;
+					topCountry = {
+						...country,
+						name: countryName,
+						link: country.link,
+					};
+				}
+			}
+
+			if (topCountry) {
+				setCountryData([topCountry]);
+				setShowOutput(true);
+			}
+		} catch (error) {
+			alert(error);
+		}
+		setIsFetching(false);
+	};
 
 	return (
 		<div className="flex flex-col gap-4 sm:gap-8 px-6 pb-2 container font-thin">
-			<div className="flex flex-col rounded-xl shadow-lg p-4 gap-2 bg-slate-700 text-white border-2 border-blue-900">
-				<h1 className="text-3xl sm:text-4xl">
+			<div className="flex flex-col rounded-xl p-4 gap-2 ">
+				{/* <h1 className="text-3xl sm:text-4xl">
 					<span className="text-orange-500">AI</span> Taxonomy Scribe
 				</h1>
 				<h4 className="text-xl">
 					Create an{" "}
 					<span className="text-orange-500">AI generated Taxonomy</span> of
 					keywords for your content in seconds
-				</h4>
+				</h4> */}
 				<form className="flex flex-col gap-4 items-center mt-2">
 					<Input
 						id="word"
 						type="text"
 						label="Search Country"
-						className="text-xl  text-black"
+						className="text-xl text-black pl"
 						onChange={(e) => setWord(e.target.value)}
 						value={word}
-					/>
+						startContent={
+							<AiOutlineSearch className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+						}
+					>
+					</Input>
 					<Button
 						onClick={handleKeywords}
 						color="primary"
 						isDisabled={isFetching}
-						className="place-self-end text-xl border-2 bg-orange-500"
+						className="place-self-end text-xl border-2 bg-lime-950"
 					>
 						{isFetching ? (
 							<Spinner size="sm" color="warning" />
 						) : (
-							"Generate Taxonomy"
+							"Generate Keywords"
 						)}
 					</Button>
 				</form>
@@ -91,9 +104,10 @@ function KeywordGenerator() {
 							className="bg-slate-700 border-2 border-blue-900 text-white"
 							key={country.name}
 						>
-							<CardHeader>
-								<h2 className="text-2xl">{country.name}</h2>
-							</CardHeader>
+							<div className="flex flex-col">
+								<p className="text-large font-medium mt-2">{country.name}</p>
+								<p className="text-large font-medium mt-2">{country.link}</p>
+							</div>
 							<CardBody>
 								<div className="flex flex-col md:flex-row gap-8">
 									<Image
