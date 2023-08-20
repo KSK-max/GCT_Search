@@ -15,8 +15,6 @@ import Image from "next/image";
 import { AiOutlineSearch } from "react-icons/ai";
 
 
-
-
 function KeywordGenerator() {
 	const [word, setWord] = useState("");
 	const [showOutput, setShowOutput] = useState(false);
@@ -27,7 +25,7 @@ function KeywordGenerator() {
 		setIsFetching(true);
 		try {
 			const { data } = await axios.post(
-				`http://16.170.27.15/search_function`,
+				`https://16.170.27.15/search_function`,
 				JSON.stringify({ search_term: word }),
 				{
 					method: "POST",
